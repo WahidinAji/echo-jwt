@@ -9,19 +9,12 @@ Run on Linux
 ```
 Accept : application/json;charset=UTF-8;
 ```
-## `WITH Authorization`
-```
-Bearer Token : <jwt-token>
-```
 ### Get All
-* url with jwt-token
+* url with `NO` jwt-token
 ```http request
 {host}/api/products
 ```
-* url with `NO` jwt-token
-```http request
-{host}/products
-```
+
 * response
 ```json
 {
@@ -50,13 +43,9 @@ Bearer Token : <jwt-token>
 }
 ```
 ### Get By Id
-* url with jwt-token
-```http request
-{host}/api/products/{id}
-```
 * url with `NO` jwt-token
 ```http request
-{host}/products/{id}
+{host}/api/products/{id}
 ```
 * response
 ```json
@@ -70,4 +59,21 @@ Bearer Token : <jwt-token>
         "price": 799.92
     }
 }
+```
+
+
+# Orders
+`notes => this is just data dummies`
+## `Header`
+```
+Accept : application/json;charset=UTF-8;
+```
+## `WITH Authorization`
+```
+Bearer Token : <jwt-token>
+```
+### Get All
+* url with jwt-token
+```http request
+{host}/api/orders
 ```

@@ -35,7 +35,7 @@ func (d *UserDependency) Login(ctx echo.Context) error {
 	//create token with claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	_token, err := token.SignedString([]byte("secret"))
+	_token, err := token.SignedString([]byte(helper.JWTSecret))
 	if err != nil {
 		return fmt.Errorf("token byte error : ", err.Error())
 	}

@@ -4,7 +4,7 @@ import (
 	orders2 "echo-jwt/components/orders"
 	"echo-jwt/components/products"
 	"echo-jwt/components/users"
-	"echo-jwt/helpers"
+	conf "echo-jwt/helpers"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -17,45 +17,39 @@ import (
 	"time"
 )
 
-var (
-	confAppName    = os.Getenv("APP_NAME")
-	confServerPort = os.Getenv("SERVER_PORT")
-	DbUser         = os.Getenv("DB_USER")
-	DbPass         = os.Getenv("DB_PASS")
-	DbName         = os.Getenv("DB_NAME")
-	DbUrl          = os.Getenv("PG_URL")
-)
-
 func init() {
-	if confAppName == "" {
+	if conf.ConfAppName == "" {
 		log.Fatal("APP_NAME config is required")
 	}
-	if confServerPort == "" {
+	if conf.ConfServerPort == "" {
 		log.Fatal("SERVER_PORT config is required")
 	}
-	if DbUrl == "" {
+	if conf.DbUrl == "" {
 		log.Fatal("PG_URL config is required")
 	}
-	//if DbUser == "" {
-	//	log.Fatal("DB_USER config is required")
-	//}
-	//if DbPass == "" {
-	//	log.Fatal("DB_PASS config is required")
-	//}
-	//if DbName == "" {
-	//	log.Fatal("DB_NAME config is required")
-	//}
+	if conf.DbUser == "" {
+		log.Fatal("DB_USER config is required")
+	}
+	if conf.DbPass == "" {
+		log.Fatal("DB_PASS config is required")
+	}
+	if conf.DbName == "" {
+		log.Fatal("DB_NAME config is required")
+	}
+	if conf.JWTSecret == "" {
+		log.Fatal("JWT_SECRET config is required")
+	}
 }
 
 func main() {
 	e := echo.New()
 
 	/**Using PostgresSql and Sqlx**/
-	//dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", DbUser, DbPass, DbName)
-	dsn := DbUrl
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", conf.DbUser, conf.DbPass, conf.DbName)
+	//dsn := DbUrl
 	dbSqlx, errSqlx := sqlx.Open("postgres", dsn)
 	if errSqlx != nil {
-		e.Logger.Fatal("during opening a postgres client:", fmt.Errorf(helpers.ErrConnInv.Error(), errSqlx))
+		e.Logger.Fatal("during opening a postgres client:", fmt.Errorf(conf.ErrConnInv.Error(), errSqlx))
 	}
 	dbSqlx.SetMaxIdleConns(10)
 	dbSqlx.SetMaxOpenConns(100)
@@ -74,16 +68,13 @@ func main() {
 	//Dependencies
 	product := products.ProductDependency{DB: dbSqlx}
 	user := users.UserDependency{DB: dbSqlx}
-
-	//without jwt
-	e.GET("/products", product.GetAll)
-	e.GET("/products/:id", product.GetById)
+	orders := orders2.OrderDeps{DB: dbSqlx}
 
 	api := e.Group("/api")
 	api.POST("/login", user.Login)
-
-	orders := orders2.OrderDeps{DB: dbSqlx}
-	api.GET("/orders", orders.GetAll)
+	//without jwt
+	api.GET("/products", product.GetAll)
+	api.GET("/products/:id", product.GetById)
 
 	//jwt
 	// Middleware
@@ -94,16 +85,15 @@ func main() {
 	config := middleware.JWTConfig{
 		//Claims:     &jwtCustomClaims{},
 		Claims:     &users.JwtUserClaims{},
-		SigningKey: []byte("secret"),
+		SigningKey: []byte(conf.JWTSecret),
 	}
 
-	////product
+	////orders with jwt
 	api.Use(middleware.JWTWithConfig(config))
-	api.GET("/products", product.GetAll)
-	api.GET("/products/:id", product.GetById)
+	api.GET("/orders", orders.GetAll)
 
 	server := new(http.Server)
-	server.Addr = ":" + confServerPort
+	server.Addr = ":" + conf.ConfServerPort
 
 	if confServerReadTimeout := os.Getenv("SERVER_READ_TIMEOUT_IN_MINUTE"); confServerReadTimeout != "" {
 		duration, _ := strconv.Atoi(confServerReadTimeout)
@@ -115,6 +105,6 @@ func main() {
 		server.WriteTimeout = time.Duration(duration) * time.Minute
 	}
 
-	e.Logger.Print(confAppName, " is running on http://localhost", server.Addr)
+	e.Logger.Print(conf.ConfAppName, " is running on http://localhost", server.Addr)
 	e.Logger.Fatal(e.StartServer(server))
 }
