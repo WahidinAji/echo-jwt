@@ -14,6 +14,8 @@ var (
 
 	// ErrNameNotFound user authentication
 
-	ErrNameNotFound = errors.New("username was not found : ")
-	ErrNotMatchUser = errors.New("wrong password. username and password do not match")
+	ErrNameNotFound      = errors.New("username was not found : ")
+	ErrNotMatchUser      = errors.New("wrong password. username and password do not match")
+	ErrNameAlreadyExists = errors.New("username was already used")
+	ErrHashFailed        = errors.New("hashing password was fail")
 )

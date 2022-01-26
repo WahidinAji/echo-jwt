@@ -7,10 +7,10 @@ import (
 )
 
 type Repository interface {
-	GetQuery(ctx context.Context) ([]Order, error)
+	FindAll(ctx context.Context) ([]Order, error)
 }
 
-func (d *OrderDeps) GetQuery(ctx context.Context) ([]Order, error) {
+func (d *OrderDeps) FindAll(ctx context.Context) ([]Order, error) {
 	db, err := d.DB.Conn(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(helper.ErrConnFailed.Error(), err)

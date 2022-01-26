@@ -72,6 +72,7 @@ func main() {
 
 	api := e.Group("/api")
 	api.POST("/login", user.Login)
+	api.POST("/register", user.Register)
 	//without jwt
 	api.GET("/products", product.GetAll)
 	api.GET("/products/:id", product.GetById)

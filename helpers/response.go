@@ -10,8 +10,14 @@ type UserMsg struct {
 	Username string `json:"username"`
 	Message  string `json:"message"`
 }
+
+type AuthResponse struct {
+	Code        int    `json:"code"`
+	Status      bool   `json:"status"`
+	Message     string `json:"message"`
+	JWTResponse `json:"data"`
+}
 type JWTResponse struct {
-	MsgDel   MsgDel `json:"response"`
 	Username string `json:"username"`
 	Token    string `json:"token"`
 }

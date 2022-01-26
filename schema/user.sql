@@ -17,6 +17,7 @@ select * from users;
 -- drop table users;
 -- drop type user_role;
 
+
 CREATE INDEX name ON users(name);
 
 SELECT name from users where name='aji';
