@@ -2,7 +2,7 @@ CREATE TABLE products(
     id uuid primary key not null,
     name varchar(200),
     stock smallint not null default 0,
-    price numeric(6,2),
+    price double precision not null,
 --     image varchar null,
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp
@@ -14,4 +14,4 @@ insert into products(id, name, stock, price) VALUES
 ('d90f8110-039a-47f4-a164-37d807f77ab5','Ipad Pro Max',53,450.93);
 
 select * from products;
--- drop table products;
+drop table products;
