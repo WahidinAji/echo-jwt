@@ -1,5 +1,6 @@
 FROM golang:1.17.6-buster
 
+# ARG for get CERT_RUL
 ARG CERT_URL
 
 WORKDIR /usr/app
