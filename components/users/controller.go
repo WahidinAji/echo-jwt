@@ -28,7 +28,7 @@ func (d *UserDependency) Login(ctx echo.Context) error {
 	claims := &JwtUserClaims{
 		username,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 1).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 5).Unix(),
 		},
 	}
 
@@ -54,7 +54,7 @@ func (d *UserDependency) Register(ctx echo.Context) error {
 	//form
 	username := ctx.FormValue("username")
 	password := ctx.FormValue("password")
-	
+
 	if username == "" || password == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "username and password can not be null")
 	}
