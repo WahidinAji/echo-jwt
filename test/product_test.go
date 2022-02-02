@@ -13,7 +13,8 @@ import (
 const dbName = "echo_jwt_testing"
 
 func TestProducts(t *testing.T) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", conf.DbUser, conf.DbPass, dbName)
+	// dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", conf.DbUser, conf.DbPass, dbName)
+	dsn := conf.DbUrl
 	dbSqlx, errSqlx := sqlx.Open("postgres", dsn)
 	defer dbSqlx.Close()
 	if errSqlx != nil {
