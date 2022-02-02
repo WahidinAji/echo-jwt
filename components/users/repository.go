@@ -9,7 +9,7 @@ import (
 
 type Repository interface {
 	LoginUser(ctx context.Context, name, password string) (*Username, error)
-	//RegisterUser(ctx context.Context, name, password string) (*Username, error)
+	RegisterUser(ctx context.Context, user User) (*Username, error)
 }
 
 //authentication
@@ -103,45 +103,11 @@ func (d *UserDependency) RegisterUser(ctx context.Context, user User) (*Username
 	}
 	var username Username
 	username.Username = user.Name
-	
+
 	err = tx.Commit()
 	if err != nil {
 		return nil, fmt.Errorf(helper.ErrCommit.Error(), err)
 	}
 
 	return &username, nil
-}
-
-func (d *UserDependency) RegisUser(ctx context.Context, user User) (*Username, error) {
-	db, err := d.DB.Conn(ctx)
-	if err != nil {
-		return nil, fmt.Errorf(helper.ErrConnFailed.Error(), err)
-	}
-	defer db.Close()
-
-	var exists bool
-	//check username
-	query := "select exists(select name from users where name=$1)"
-	err = db.QueryRowContext(ctx, query, user.Name).Scan(&exists)
-	if err != nil {
-		return nil, fmt.Errorf(helper.ErrQuery.Error()+"1 ", err)
-	}
-	if exists {
-		return nil, fmt.Errorf(helper.ErrNameAlreadyExists.Error(), err)
-	}
-
-	pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
-	//pass, err := helper.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-
-	var username *Username
-	query = "INSERT INTO users (id, name, password) values($1,$2,$3) RETURNING name"
-	row := db.QueryRowContext(ctx, query, user.ID, user.Name, pass)
-	if err = row.Scan(&username); err != nil {
-		return nil, fmt.Errorf(helper.ErrScan.Error(), err)
-	}
-
-	return username, nil
 }

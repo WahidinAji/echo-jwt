@@ -11,6 +11,7 @@ var (
 	ErrBeginTx    = errors.New("begin transaction error : ")
 	ErrScan       = errors.New("scan error : ")
 	ErrCommit     = errors.New("commit error : ")
+	ErrExec       = errors.New("query exec error : ")
 
 	// ErrNameNotFound user authentication
 

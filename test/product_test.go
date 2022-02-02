@@ -31,6 +31,6 @@ func TestProducts(t *testing.T) {
 	t.Run("Get all products", func(t *testing.T) {
 		stmt.ExecContext(ctx, "products 1", 10, 100.99)
 		product := products.ProductDependency{DB: dbSqlx}
-		fmt.Println(product)
+		fmt.Println(product.FindAll(ctx))
 	})
 }

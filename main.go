@@ -6,15 +6,16 @@ import (
 	"echo-jwt/components/users"
 	conf "echo-jwt/helpers"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 )
 
 func init() {
@@ -46,7 +47,7 @@ func main() {
 
 	/**Using PostgresSql and Sqlx**/
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", conf.DbUser, conf.DbPass, conf.DbName)
-	//dsn := DbUrl
+	dsn = conf.DbUrl //if you're don't use db as url string, u can disable this line
 	dbSqlx, errSqlx := sqlx.Open("postgres", dsn)
 	if errSqlx != nil {
 		e.Logger.Fatal("during opening a postgres client:", fmt.Errorf(conf.ErrConnInv.Error(), errSqlx))
