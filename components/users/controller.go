@@ -15,7 +15,6 @@ func (d *UserDependency) Login(ctx echo.Context) error {
 	username := ctx.FormValue("username")
 	password := ctx.FormValue("password")
 
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 	if username == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "name can not be null")
 	}
@@ -55,7 +54,7 @@ func (d *UserDependency) Register(ctx echo.Context) error {
 	//form
 	username := ctx.FormValue("username")
 	password := ctx.FormValue("password")
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+	
 	if username == "" || password == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "username and password can not be null")
 	}
