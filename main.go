@@ -52,11 +52,7 @@ func main() {
 	if errSqlx != nil {
 		e.Logger.Fatal("during opening a postgres client:", fmt.Errorf(conf.ErrConnInv.Error(), errSqlx))
 	}
-	dbSqlx.SetMaxIdleConns(10)
-	dbSqlx.SetMaxOpenConns(100)
-	dbSqlx.SetConnMaxIdleTime(5 * time.Minute)
-	dbSqlx.SetConnMaxLifetime(60 * time.Minute)
-	fmt.Println(dbSqlx.Ping())
+	
 	defer dbSqlx.Close()
 
 	e.GET("/", func(c echo.Context) (err error) {
