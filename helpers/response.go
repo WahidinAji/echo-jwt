@@ -15,7 +15,7 @@ type AuthResponse struct {
 	Code        int    `json:"code"`
 	Status      bool   `json:"status"`
 	Message     string `json:"message"`
-	JWTResponse `json:"data"`
+	JWTResponse JWTResponse `json:"data"`
 }
 type JWTResponse struct {
 	Username string `json:"username"`
