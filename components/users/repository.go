@@ -14,7 +14,7 @@ type Repository interface {
 
 //authentication
 
-func (d *UserDependency) LoginUser(ctx context.Context, name string, password string) (*Username, error) {
+func (d *UserDependency) LoginUser(ctx context.Context, name, password string) (*Username, error) {
 	db, err := d.DB.Conn(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(helper.ErrConnFailed.Error(), err)
@@ -39,21 +39,30 @@ func (d *UserDependency) LoginUser(ctx context.Context, name string, password st
 		return nil, fmt.Errorf(helper.ErrNameNotFound.Error(), err)
 	}
 
-	//check if username and password doesn't match
-	query = "select exists(select name from users where name=$1 and password=$2)"
-	err = tx.QueryRowContext(ctx, query, name, password).Scan(&authenticate)
-	if err != nil {
-		return nil, fmt.Errorf(helper.ErrQuery.Error()+"2 ", err)
-	}
+	//check password for username and password
+	var pass string
+	tx.QueryRowContext(ctx, "select password from users where name=$1", name).Scan(&pass)
+	//compare password
+	authenticate = helper.CheckPassword(password, pass)
 	if !authenticate {
-		return nil, fmt.Errorf(helper.ErrNotMatchUser.Error())
+		return nil, fmt.Errorf(helper.ErrNotMatchUser.Error(), err)
 	}
+
+	////check if username and password doesn't match
+	//query = "select exists(select name from users where name=$1 and password=$2)"
+	//err = tx.QueryRowContext(ctx, query, name, pass).Scan(&authenticate)
+	//if err != nil {
+	//	return nil, fmt.Errorf(helper.ErrQuery.Error()+"2 ", err)
+	//}
+	//if !authenticate {
+	//	return nil, fmt.Errorf(helper.ErrNotMatchUser.Error())
+	//}
 
 	var user Username
 	query = "SELECT name FROM users WHERE name=$1 and password=$2"
 
 	//row, err := db.QueryContext(ctx, query, name, password)
-	row := tx.QueryRowContext(ctx, query, name, password)
+	row := tx.QueryRowContext(ctx, query, name, pass)
 	err = row.Scan(&user.Username)
 	if err != nil {
 		return nil, fmt.Errorf(helper.ErrScan.Error(), err)
@@ -91,7 +100,7 @@ func (d *UserDependency) RegisterUser(ctx context.Context, user User) (*Username
 	}
 
 	//hash password here
-	pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 	//pass, err := helper.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
