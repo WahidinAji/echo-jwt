@@ -1,5 +1,4 @@
 .idea
 config.sh
 docker-composer.yml
-fly.toml
 *.png
