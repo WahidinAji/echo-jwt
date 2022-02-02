@@ -6,12 +6,14 @@ import (
 	"echo-jwt/components/users"
 	conf "echo-jwt/helpers"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
-	"log"
-	"net/http"
 )
 
 func init() {
@@ -32,7 +34,7 @@ func main() {
 	if errSqlx != nil {
 		e.Logger.Fatal("during opening a postgres client:", fmt.Errorf(conf.ErrConnInv.Error(), errSqlx))
 	}
-	
+
 	defer dbSqlx.Close()
 
 	e.GET("/", func(c echo.Context) (err error) {
@@ -70,8 +72,12 @@ func main() {
 	api.Use(middleware.JWTWithConfig(config))
 	api.GET("/orders", orders.GetAll)
 
-	server := new(http.Server)
-	server.Addr = ":" + conf.ConfServerPort
+	server := &http.Server{
+		Addr: ":" + conf.ConfServerPort,
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+	}
 
 	e.Logger.Print(conf.ConfAppName, " is running on http://localhost", server.Addr)
 	e.Logger.Fatal(e.StartServer(server))
