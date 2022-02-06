@@ -3,9 +3,11 @@ package main
 import (
 	orders2 "echo-jwt/components/orders"
 	"echo-jwt/components/products"
+	"echo-jwt/components/public"
 	"echo-jwt/components/users"
 	conf "echo-jwt/helpers"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -37,8 +39,15 @@ func main() {
 
 	defer dbSqlx.Close()
 
-	e.GET("/", func(c echo.Context) (err error) {
-		return c.JSON(http.StatusOK, "Hello, World")
+	t := &public.Template{
+		Template: template.Must(template.ParseGlob("*.html")),
+	}
+	//e.GET("/", func(c echo.Context) (err error) {
+	//	return c.JSON(http.StatusOK, "Hello, World")
+	//})
+	e.Renderer = t
+	e.GET("/", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "index.html", "index")
 	})
 	e.GET("/index", func(c echo.Context) (err error) {
 		return c.JSON(http.StatusOK, true)
