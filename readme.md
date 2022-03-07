@@ -1,6 +1,6 @@
 Run on Linux
 ```bash
-/bin/bash /home/dun/Documents/golang/echo-jwt/config.sh
+bash sample-config.sh
 ```
 `host` : `http://localhost:9000`
 # Products
